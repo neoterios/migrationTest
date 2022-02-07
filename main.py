@@ -12,9 +12,11 @@ CORS(app)
 
 @app.route('/test/')
 def test():
-     return jsonify({"status": 200, "message": "test ok"})
-    # test_ = Test()
-    # return jsonify(test_.get_teams())
+    return jsonify({"status": 200, "message": "test ok"})
+
+
+# test_ = Test()
+# return jsonify(test_.get_teams())
 
 
 if __name__ == '__main__':
