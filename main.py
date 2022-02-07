@@ -1,25 +1,23 @@
 import logging
-from flask import Flask, request, jsonify
+# import os
+from dotenv import load_dotenv
+
+from flask import Flask
+import json
 from flask_cors import CORS
 
-from logic.test import Test
+from logic.migration import Migration
 
-# Press the green button in the gutter to run the script.
-
+load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
 
-@app.route('/test/')
-def test():
-    return jsonify({"status": 200, "message": "test ok"})
-
-
-# test_ = Test()
-# return jsonify(test_.get_teams())
+@app.route('/start_migration/')
+def get_migration():
+    migration = Migration()
+    return json.dumps(migration.start_migration());
 
 
 if __name__ == '__main__':
     app.run()
-    # test = Test()
-    # print(test.get_teams())
