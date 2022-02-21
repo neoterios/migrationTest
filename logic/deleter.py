@@ -1,4 +1,3 @@
-import atexit
 import concurrent
 import concurrent.futures
 import os
@@ -17,20 +16,13 @@ class Deleter:
     def __init__(self, destiny_token):
         self._api_destiny_session = APISession(destiny_token)
 
-    def start_deleting(self):
+    def start_deleting_sy(self):
         list_teams = self.list_teams_to_delete(self._api_destiny_session)
-        return self._delete(list_teams)
+        return self._delete_sy(list_teams)
 
     def start_deleting_mp(self):
         list_teams = self.list_teams_to_delete(self._api_destiny_session)
-        return self.__delete(list_teams)
-
-    def start_deleting_mp_2(self, teams):
-        # list_teams = self.list_teams_to_delete(self._api_destiny_session)
-        list_teams: List[str] = []
-        for team in teams:
-            list_teams.append(team.id_param)
-        return self.__delete(list_teams)
+        return self._delete_mp(list_teams)
 
     def list_teams_to_delete(self, session):
 
@@ -56,7 +48,6 @@ class Deleter:
     # @staticmethod
     def _delete_teams(self, id_team):
 
-        # session = self._api_destiny_session
         session = APISession(os.getenv("TOKEN_DESTINATION_WR"))
         response = session.delete(KeyData.DEL_TEAM_API_URL.format(id_team))
         if not response.ok:
@@ -67,7 +58,7 @@ class Deleter:
         logger.info("Deleting data at destination has ended - {0} has been deleted".format(id_team))
         return True
 
-    def _delete(self, list_teams):
+    def _delete_sy(self, list_teams):
         logger.info("Starting Deleting data as SYNC method at destination has ended")
         y = True
         for x in list_teams:
@@ -75,7 +66,7 @@ class Deleter:
                 y = False
         return y
 
-    def __delete(self, list_teams):
+    def _delete_mp(self, list_teams):
         logger.info("Starting Deleting data as MultiProcessing method at destination has started")
         with concurrent.futures.ProcessPoolExecutor() as executor:
             executor.map(self._delete_teams, list_teams)

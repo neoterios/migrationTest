@@ -1,6 +1,7 @@
 import logging
 
 from logging_module.context import correlation_id
+from logic.Key_data import KeyData
 
 
 class ContextFilter(logging.Filter):
@@ -19,7 +20,7 @@ formatter = logging.Formatter('%(asctime)-15s %(name)-5s %(levelname)-8s %(corre
 ch = logging.StreamHandler()
 ch.setFormatter(formatter)
 
-file_handler = logging.FileHandler(filename='logs/Migration.log')
+file_handler = logging.FileHandler(filename=KeyData.LOG_FILE_NAME)
 file_handler.setFormatter(formatter)
 
 logger.addHandler(ch)

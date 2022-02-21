@@ -8,31 +8,15 @@ from flask_cors import CORS
 
 from logging_module.context import correlation_id
 from logging_module.logger import logger
-
+from logic.Key_data import KeyData
 from logic.deleter import Deleter
+
 from logic.migration_mp import MigrationMp
-from logic.migration_ori import MigrationOri
 from logic.migration_sy import MigrationSy
 
 load_dotenv()
 app = Flask(__name__)
 CORS(app)
-
-
-@app.route('/start_migration/')
-def get_migration():
-    correlation_id.set(uuid.uuid4())
-    logger.info("Info - start_migration service has benn invoked")
-    migration = MigrationOri(os.getenv("TOKEN_PROVIDER"), os.getenv("TOKEN_DESTINATION_WR"))
-    resp = migration.start_migration()
-
-    if resp.default_status != 200:
-        logger.error("An Error has been detected saving origin data at destination, code  error {0}"
-                     .format(resp.status_code))
-        return Response("Error saving origin data at destination", resp.status_code, mimetype="application/json")
-
-    logger.info("Data  migration has been  ended, status  code  {0}".format(resp.status_code))
-    return resp
 
 
 @app.route('/start_migration_sy/')
@@ -45,7 +29,7 @@ def get_migration_sy():
     if resp.default_status != 200:
         logger.error("An Error has been detected saving origin data at destination, code  error {0}"
                      .format(resp.status_code))
-        return Response("Error saving origin data at destination", resp.status_code, mimetype="application/json")
+        return Response("Error saving origin data at destination", resp.status_code, mimetype=KeyData.DATA_MIME_TYPE)
 
     logger.info("Data  migration has been  ended, status  code  {0}".format(resp.status_code))
     return resp
@@ -60,7 +44,7 @@ def get_migration_mp():
     if resp.default_status != 200:
         logger.error("An Error has been detected saving origin data at destination, code  error {0}"
                      .format(resp.status_code))
-        return Response("Error saving origin data at destination", resp.status_code, mimetype="application/json")
+        return Response("Error saving origin data at destination", resp.status_code, mimetype=KeyData.DATA_MIME_TYPE)
 
     logger.info("Data  migration has been  ended, status  code  {0}".format(resp.status_code))
     return resp
@@ -71,12 +55,12 @@ async def get_delete_sy():
     correlation_id.set(uuid.uuid4())
     logger.info("Info - Deleteting SYNC service has benn invoked")
     deleter = Deleter(os.getenv("TOKEN_DESTINATION_WR"))
-    if deleter.start_deleting() is False:
+    if deleter.start_deleting_sy() is False:
         return Response({"messagge": "Verifique los registros hubo una falla"}, HTTPStatus.BAD_REQUEST,
-                        mimetype="application/json")
+                        mimetype=KeyData.DATA_MIME_TYPE)
 
     return Response("Eliminacion exitosa", HTTPStatus.OK,
-                    mimetype="application/json")
+                    mimetype=KeyData.DATA_MIME_TYPE)
 
 
 @app.route('/delete_mp/')
@@ -86,10 +70,10 @@ async def get_delete_mp():
     deleter = Deleter(os.getenv("TOKEN_DESTINATION_WR"))
     if deleter.start_deleting_mp() is False:
         return Response({"messagge": "Verifique los registros hubo una falla"}, HTTPStatus.BAD_REQUEST,
-                        mimetype="application/json")
+                        mimetype=KeyData.DATA_MIME_TYPE)
 
     return Response("Eliminacion exitosa", HTTPStatus.OK,
-                    mimetype="application/json")
+                    mimetype=KeyData.DATA_MIME_TYPE)
 
 
 if __name__ == '__main__':

@@ -8,7 +8,6 @@ from http import HTTPStatus
 from flask import Response
 from pdpyras import APISession
 from logic.Key_data import KeyData
-from logic.deleter import Deleter
 from logic.migration import Migration
 from models.models import Teams, SessionCallBack
 from typing import List
@@ -74,7 +73,6 @@ class MigrationMp(Migration):
         return Response(result, HTTPStatus.OK, mimetype=KeyData.DATA_MIME_TYPE)
 
     def start_deleting_mp_2(self, teams):
-        # list_teams = self.list_teams_to_delete(self._api_destiny_session)
         list_teams: List[str] = []
         for team in teams:
             list_teams.append(team.id_param)
@@ -88,7 +86,6 @@ class MigrationMp(Migration):
 
     def _delete_teams(self, id_team):
 
-        # session = self._api_destiny_session
         session = APISession(os.getenv("TOKEN_DESTINATION_WR"))
         response = session.delete(KeyData.DEL_TEAM_API_URL.format(id_team))
         if not response.ok:
@@ -101,7 +98,7 @@ class MigrationMp(Migration):
 
     def _post_teams_mp(self, origin_teams, api_token):
         with concurrent.futures.ProcessPoolExecutor() as executor:
-            x = executor.map(self._post_teams_mp_ex, origin_teams)
+            executor.map(self._post_teams_mp_ex, origin_teams)
             return True
 
     def _post_teams_mp_ex(self, team: Teams):
