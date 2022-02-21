@@ -1,2 +1,2 @@
 # migrationTest
-Test for data migration from rest sevice to own environment
+Test for data migration from rest service to own environment
